@@ -1,0 +1,18 @@
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: black;
+  color: whitesmoke;
+  height: 100vh;
+}
+
+#textContainer {
+  width: 60%;
+}
+
+.button {
+  padding: 2rem;
+  margin: 2rem;
+}
