@@ -1,11 +1,19 @@
 window.addEventListener("DOMContentLoaded", main);
 
+/**
+ * Main function that initializes the application
+ * Loads items and the current scene from localStorage
+ */
 function main() {
   loadItemsFromLocalStorage();
   loadSceneFromLocalStorage();
+  startOverButton.onclick = startOver;
 }
-// loadingWelcomeScene();
+startButton.onclick = loadFirstScene;
 
+/**
+ * Loads current scene from localStorage to return user to last saved state after reload
+ */
 function loadSceneFromLocalStorage() {
   const scene = localStorage.getItem("currentScene");
   switch (scene) {
@@ -33,9 +41,6 @@ function loadSceneFromLocalStorage() {
     case "unlockThirdAltar":
       unlockThirdAltar();
       break;
-    case "daggerPath":
-      loadingDaggerPath();
-      break;
     case "statue":
       loadStatueScene();
       break;
@@ -45,15 +50,29 @@ function loadSceneFromLocalStorage() {
     case "unlockStatue":
       unlockStatue();
       break;
+    case "inspectExit":
+      inspectExit();
+      break;
+    case "exit":
+      loadExitScene();
+      break;
   }
 }
-
+/**
+ * List containing items picked up by the user
+ * @type {string[]}
+ */
 let carriedItems = [];
+
+/**
+ * List containing items placed at the end of the application
+ * @type {string[]}
+ */
 let placedItems = [];
 
-startOverButton.onclick = startOver;
-startButton.onclick = loadFirstScene;
-
+/**
+ * Declaration of function that loads items that have been saved to localStorage
+ */
 function loadItemsFromLocalStorage() {
   const carriedItemsString = localStorage.getItem("carriedItems");
   const placedItemsString = localStorage.getItem("placedItems");
@@ -65,16 +84,32 @@ function loadItemsFromLocalStorage() {
   }
 }
 
+/**
+ * Declaration of function that clears localStorage for carriedItems and placedItems arrays
+ * Returns user to loadWelcomeScene function
+ */
 function startOver() {
   localStorage.clear(carriedItems);
   localStorage.clear(placedItems);
-  loadingWelcomeScene();
+  loadWelcomeScene();
 }
 
-function loadingWelcomeScene() {
+/**
+ * Function declaration to return user to start of the application
+ */
+function loadWelcomeScene() {
   localStorage.setItem("currentScene", "welcome");
 }
 
+/**
+ * Initializes and displays the first scene in the game.
+ *
+ * This function sets up  HTML structure for the first scene,
+ * including  description of the scene, an input field for selecting an item,
+ * and buttons for progressing or changing the selected item. Selected items are stored in `carriedItems` array and saved to localStorage.
+ *
+ * Local storage is updated with the current scene and the selected item.
+ */
 function loadFirstScene() {
   welcomeHeading.innerHTML = "";
   textContainer.innerHTML = "";
@@ -143,7 +178,11 @@ function loadFirstScene() {
     // const carriedItems2 = JSON.parse(localStorage.savedItems);
   }
 }
-
+/**
+ * Initializes and displays the second scene in the game.
+ *
+ * This function sets up  HTML structure for the first scene, including  description of the scene, and buttons for inspecting various altars, as well as for backtracking
+ */
 function loadSecondScene() {
   welcomeHeading.innerHTML = "";
   textContainer.innerHTML = "";
@@ -183,6 +222,11 @@ function loadSecondScene() {
   fourthButton.onclick = loadFirstScene;
 }
 
+/**
+ * Initializes and displays the first altar scene in the game.
+ *
+ * This function sets up  HTML structure for the first altar scene, including  description of the scene, and button for unlocking the altar, as well as for backtracking
+ */
 function inspectFirstAltar() {
   welcomeHeading.innerHTML = "";
   textContainer.innerHTML = "";
@@ -209,6 +253,11 @@ function inspectFirstAltar() {
   secondButton.onclick = loadSecondScene;
 }
 
+/**
+ * Handles the interaction logic for attempting to unlock the first altar
+ * If the player has the "dolk" (dagger) in their carried items, the function updates the game scene in `localStorage`, clears and updates the UI with a description of unlocking the altar, and provides buttons to continue or go back. If the "dolk" is not present, the function informs the player that they need a sharp object and provides a button to return to the previous room.
+ * saves the scene to localStorage
+ */
 function unlockFirstAltar() {
   if (carriedItems.includes("dolk")) {
     localStorage.setItem("currentScene", "unlockFirstAltar");
@@ -225,7 +274,7 @@ function unlockFirstAltar() {
     continueButton.innerHTML = "Gå genom dörren";
     continueButton.className = "button";
     buttonContainer.append(continueButton);
-    continueButton.onclick = loadingDaggerPath;
+    continueButton.onclick = loadStatueScene;
 
     const backButton = document.createElement("button");
     backButton.innerHTML = "Tillbaka till rummet";
@@ -250,6 +299,11 @@ function unlockFirstAltar() {
   }
 }
 
+/**
+ * Initializes and displays the second altar scene in the game.
+ *
+ * This function sets up  HTML structure for the second altar scene, including  description of the scene, and button for unlocking the altar, as well as for backtracking
+ */
 function inspectSecondAltar() {
   welcomeHeading.innerHTML = "";
   textContainer.innerHTML = "";
@@ -258,7 +312,8 @@ function inspectSecondAltar() {
   localStorage.setItem("currentScene", "secondAltar");
 
   const secondAltarP = document.createElement("p");
-  secondAltarP.innerHTML = "ANDRA ALTARET";
+  secondAltarP.innerHTML =
+    "Du står framför ett stenaltare. På altaret står en statyett av en tjock padda, prydd med dyra halsband, ringar och iklädd en krona. Paddans händer är utsträcka och kuperade som om den förväntar sig att du ska lägga någonting i dem.";
   secondAltarP.className = "p-text";
   textContainer.append(secondAltarP);
 
@@ -275,6 +330,11 @@ function inspectSecondAltar() {
   secondButton.onclick = loadSecondScene;
 }
 
+/**
+ * Handles the interaction logic for attempting to unlock the first altar
+ * If the player has the "amulett" (amulet) in their carried items, the function updates the game scene in `localStorage`, clears and updates the UI with a description of unlocking the altar, and provides buttons to continue or go back. If the "amulett" is not present, the function informs the player that they need a valuable object and provides a button to return to the previous room.
+ * saves the scene to localStorage
+ */
 function unlockSecondAltar() {
   localStorage.setItem("currentScene", "unlockSecondAltar");
   if (carriedItems.includes("amulett")) {
@@ -283,7 +343,8 @@ function unlockSecondAltar() {
     buttonContainer.innerHTML = "";
 
     const unlockedAltarP = document.createElement("p");
-    unlockedAltarP.innerHTML = "RUBINEN LÅSER UPP";
+    unlockedAltarP.innerHTML =
+      "Du lyckas plocka ur rubinen ur amulettens mitt och placerar den försiktigt i paddans utsträckta händer. Allt är tyst i ett ögonblick innan kedjorna till dörren bredvid altaret vittrar sönder till aska som sakta singlar till marken. Dörren är nu olåst.";
     unlockedAltarP.className = "p-text";
     textContainer.append(unlockedAltarP);
 
@@ -291,7 +352,7 @@ function unlockSecondAltar() {
     continueButton.innerHTML = "Gå genom dörren";
     continueButton.className = "button";
     buttonContainer.append(continueButton);
-    continueButton.onclick = loadingDaggerPath;
+    continueButton.onclick = loadStatueScene;
 
     const backButton = document.createElement("button");
     backButton.innerHTML = "Tillbaka till rummet";
@@ -316,6 +377,11 @@ function unlockSecondAltar() {
   }
 }
 
+/**
+ * Initializes and displays the third altar scene in the game.
+ *
+ * This function sets up  HTML structure for the third altar scene, including  description of the scene, and button for unlocking the altar, as well as for backtracking
+ */
 function inspectThirdAltar() {
   welcomeHeading.innerHTML = "";
   textContainer.innerHTML = "";
@@ -324,12 +390,13 @@ function inspectThirdAltar() {
   localStorage.setItem("currentScene", "thirdAltar");
 
   const thirdAltarP = document.createElement("p");
-  thirdAltarP.innerHTML = "TREDJE ALTARET";
+  thirdAltarP.innerHTML =
+    "Du står framför ett stenaltare. På altaret står en stenrelief föreställande en folksamling som uppmärksamt lyssnar till en central figur som ser ur att läsa från en bok. Någonting säger dig att du behöver läsa upp någonting.";
   thirdAltarP.className = "p-text";
   textContainer.append(thirdAltarP);
 
   const firstButton = document.createElement("button");
-  firstButton.innerHTML = "Recitera en text";
+  firstButton.innerHTML = "Recitera en passage.";
   firstButton.className = "button";
   buttonContainer.append(firstButton);
   firstButton.onclick = unlockThirdAltar;
@@ -341,6 +408,11 @@ function inspectThirdAltar() {
   secondButton.onclick = loadSecondScene;
 }
 
+/**
+ * Handles the interaction logic for attempting to unlock the first altar
+ * If the player has the "bok" (book) in their carried items, the function updates the game scene in `localStorage`, clears and updates the UI with a description of unlocking the altar, and provides buttons to continue or go back. If the "bok" is not present, the function informs the player that they need a valuable object and provides a button to return to the previous room.
+ * saves the scene to localStorage
+ */
 function unlockThirdAltar() {
   localStorage.setItem("currentScene", "unlockThirdAltar");
   if (carriedItems.includes("bok")) {
@@ -349,7 +421,8 @@ function unlockThirdAltar() {
     buttonContainer.innerHTML = "";
 
     const unlockedAltarP = document.createElement("p");
-    unlockedAltarP.innerHTML = "BOKEN LÅSER UPP";
+    unlockedAltarP.innerHTML =
+      "Du öppnar boken och bläddrar igenom de gamla sidorna. Även om boken ser uråldrig ut är pappret i gott skick.Boken verkar vara skriven på ett språk du inte kan förstå, men när du börjar läsa texten högt märker du hur du ditt uttal och tempo på något sätt är perfekt. Allt är tyst i ett ögonblick innan kedjorna till dörren bredvid altaret vittrar sönder till aska som sakta singlar till marken. Dörren är nu olåst.";
     unlockedAltarP.className = "p-text";
     textContainer.append(unlockedAltarP);
 
@@ -357,7 +430,7 @@ function unlockThirdAltar() {
     continueButton.innerHTML = "Gå genom dörren";
     continueButton.className = "button";
     buttonContainer.append(continueButton);
-    continueButton.onclick = loadingDaggerPath;
+    continueButton.onclick = loadStatueScene;
 
     const backButton = document.createElement("button");
     backButton.innerHTML = "Tillbaka till rummet";
@@ -382,31 +455,11 @@ function unlockThirdAltar() {
   }
 }
 
-function loadingDaggerPath() {
-  welcomeHeading.innerHTML = "";
-  textContainer.innerHTML = "";
-  buttonContainer.innerHTML = "";
-
-  localStorage.setItem("currentScene", "daggerPath");
-
-  const daggerPathP = document.createElement("p");
-  daggerPathP.innerHTML = "DAGGER PATH";
-  daggerPathP.className = "p-text";
-  textContainer.append(daggerPathP);
-
-  const continueButton = document.createElement("button");
-  continueButton.innerHTML = "Gå genom dörren";
-  continueButton.className = "button";
-  buttonContainer.append(continueButton);
-  continueButton.onclick = loadStatueScene;
-
-  const backButton = document.createElement("button");
-  backButton.innerHTML = "Tillbaka till förra rummet";
-  backButton.className = "button";
-  buttonContainer.append(backButton);
-  backButton.onclick = loadSecondScene;
-}
-
+/**
+ * Loads and renders statue scene
+ * This function sets up  HTML structure for the first altar scene, including  description of the scene and interactive buttons.
+ * Depending on which items are carried, different variations of the scene descriptions are changed and displayed.
+ */
 function loadStatueScene() {
   welcomeHeading.innerHTML = "";
   textContainer.innerHTML = "";
@@ -436,9 +489,24 @@ function loadStatueScene() {
   backButton.innerHTML = "Tillbaka till förra rummet";
   backButton.className = "button";
   buttonContainer.append(backButton);
-  backButton.onclick = loadingDaggerPath;
+  backButton.onclick = loadSecondScene;
+
+  if (
+    placedItems.includes("dolk") &&
+    placedItems.includes("amulett") &&
+    placedItems.includes("bok")
+  ) {
+    statueSceneP.innerHTML =
+      "Statyn har nu alla sina föremål och fällgallret har öppnat sig. Du har nu möjligheten att lämna salen.";
+    inspectExitButton.innerHTML = "Lämna salen";
+    inspectExitButton.onclick = loadExitScene;
+  }
 }
 
+/**
+ * Loads and renders a more detailed description of the statue. Contains logic for displaying various states of the statue, depending on which items the user places onto the statue.
+ * Contains logic allowing the user to place an item onto statue, depending on which item they carry.
+ */
 function inspectStatue() {
   welcomeHeading.innerHTML = "";
   textContainer.innerHTML = "";
@@ -478,7 +546,7 @@ function inspectStatue() {
     backButton.onclick = loadStatueScene;
   } else if (carriedItems.includes("amulett")) {
     const insertAmuletButton = document.createElement("button");
-    insertAmuletButton.innerHTML = "Placera boken i statyns vänstra hand";
+    insertAmuletButton.innerHTML = "Placera amuletten runt statyns hals";
     insertAmuletButton.className = "button";
     buttonContainer.append(insertAmuletButton);
     insertAmuletButton.onclick = unlockStatue;
@@ -495,19 +563,50 @@ function inspectStatue() {
     buttonContainer.append(backButton);
     backButton.onclick = loadStatueScene;
   }
+
+  if (placedItems.includes("dolk")) {
+    statueSceneP.innerHTML =
+      "Statyn framför dig föreställer en person iklädd en skrud med en luva uppdragen över huvudet. <strong>Dess högra hand är lyft och sluten runt dolken du har placerat där</strong>. Den vänstra handen hålls ut i midjehöjd med handflatan upp mot taket, och även här ser det ut som att statyn en gång har hållit i ett föremål, kanske något platt. Vid statyns hals ser du spår av rispor, som om någonting en gång har hängt runt statyns hals. Vad vill du göra?";
+  }
+  if (placedItems.includes("amulett")) {
+    statueSceneP.innerHTML =
+      "Statyn framför dig föreställer en person iklädd en skrud med en luva uppdragen över huvudet. Dess högra hand är lyft och sluten runt ett förmodligen cylindriskt föremål som inte längre finns i handen. Den vänstra handen hålls ut i midjehöjd med handflatan upp mot taket, och även här ser det ut som att statyn en gång har hållit i ett föremål, kanske något platt. <strong>Runt statyns hals hänger nu amuletten du placerat där</strong>. Vad vill du göra?";
+  }
+  if (placedItems.includes("bok")) {
+    statueSceneP.innerHTML =
+      "Statyn framför dig föreställer en person iklädd en skrud med en luva uppdragen över huvudet. Dess högra hand är lyft och sluten runt ett förmodligen cylindriskt föremål som inte längre finns i handen. <strong>I statyns vänstra hand ligger nu boken du har placerat där.</strong> Vid statyns hals ser du spår av rispor, som om någonting en gång har hängt runt statyns hals. Vad vill du göra?";
+  }
+  if (placedItems.includes("dolk") && placedItems.includes("amulett")) {
+    statueSceneP.innerHTML =
+      "Statyn framför dig föreställer en person iklädd en skrud med en luva uppdragen över huvudet. <strong>Dess högra hand är lyft och sluten runt dolken du har placerat där</strong>. Den vänstra handen hålls ut i midjehöjd med handflatan upp mot taket, och även här ser det ut som att statyn en gång har hållit i ett föremål, kanske något platt. <strong>Runt statyns hals hänger nu amuletten du placerat där</strong>. Vad vill du göra?";
+  }
+  if (placedItems.includes("dolk") && placedItems.includes("bok")) {
+    statueSceneP.innerHTML =
+      "Statyn framför dig föreställer en person iklädd en skrud med en luva uppdragen över huvudet. <strong>Dess högra hand är lyft och sluten runt dolken du har placerat där</strong>. <strong>I statyns vänstra hand ligger nu boken du har placerat där.</strong> Vid statyns hals ser du spår av rispor, som om någonting en gång har hängt runt statyns hals. Vad vill du göra?";
+  }
+  if (placedItems.includes("bok") && placedItems.includes("amulett")) {
+    ("Statyn framför dig föreställer en person iklädd en skrud med en luva uppdragen över huvudet. Dess högra hand är lyft och sluten runt ett förmodligen cylindriskt föremål som inte längre finns i handen. <strong>I statyns vänstra hand ligger nu boken du har placerat där.</strong> <strong>Runt statyns hals hänger nu amuletten du placerat där</strong>. Vad vill du göra?");
+  }
+  if (
+    placedItems.includes("dolk") &&
+    placedItems.includes("amulett") &&
+    placedItems.includes("bok")
+  ) {
+    statueSceneP.innerHTML =
+      "Statyn framför dig föreställer en person iklädd en skrud med en luva uppdragen över huvudet. <strong>Dess högra hand är lyft och sluten runt dolken du har placerat där</strong>. <strong>I statyns vänstra hand ligger nu boken du har placerat där.</strong> <strong>Runt statyns hals hänger nu amuletten du placerat där.</strong> Gallret som blockerade gången är nu uppdraget. Vad vill du göra?";
+  }
 }
 
+/**
+ * Renders feedback to the user depending on which item they place upon the statue.
+ * Contains logic moving items from carriedItems array to placedItems array and saving them to localStorage.
+ */
 function unlockStatue() {
   welcomeHeading.innerHTML = "";
   textContainer.innerHTML = "";
   buttonContainer.innerHTML = "";
 
   localStorage.setItem("currentScene", "unlockStatue");
-
-  const statueSceneP = document.createElement("p");
-  statueSceneP.innerHTML = "LÅS ÖPPET";
-  statueSceneP.className = "p-text";
-  textContainer.append(statueSceneP);
 
   const movedItem = carriedItems.pop();
   if (movedItem) {
@@ -517,6 +616,24 @@ function unlockStatue() {
   localStorage.setItem("carriedItems", JSON.stringify(carriedItems));
   localStorage.setItem("placedItems", JSON.stringify(placedItems));
 
+  if (
+    placedItems.includes("dolk") &&
+    placedItems.includes("amulett") &&
+    placedItems.includes("bok")
+  ) {
+    const statueSceneP = document.createElement("p");
+    statueSceneP.innerHTML =
+      "Ett rasslande av kedjor och vinchar ekar genom salen och fällgallret höjs sakta upp och försvinner upp igenom taket.";
+    statueSceneP.className = "p-text";
+    textContainer.append(statueSceneP);
+  } else {
+    const statueSceneP = document.createElement("p");
+    statueSceneP.innerHTML =
+      "Ett mekaniskt ljud hörs från fällgallret, som om ett lås öppnades. Gallret är dock fortfarande nedfällt.";
+    statueSceneP.className = "p-text";
+    textContainer.append(statueSceneP);
+  }
+
   const backButton = document.createElement("button");
   backButton.innerHTML = "Tillbaka till statyn";
   backButton.className = "button";
@@ -524,4 +641,64 @@ function unlockStatue() {
   backButton.onclick = inspectStatue;
 }
 
-function inspectExit() {}
+/**
+ * Renders scene to allow for inspection of a closed dates, including button to allow of backtracking
+ * Contains logic for whether or not the gate is shut, depending on if all items have been placed on the statue.
+ */
+function inspectExit() {
+  welcomeHeading.innerHTML = "";
+  textContainer.innerHTML = "";
+  buttonContainer.innerHTML = "";
+
+  localStorage.setItem("currentScene", "inspectExit");
+
+  if (
+    placedItems.includes("dolk") &&
+    placedItems.includes("amulett") &&
+    placedItems.includes("bok")
+  ) {
+    const inspectExitP = document.createElement("p");
+    inspectExitP.innerHTML =
+      "Ett rasslande av kedjor och vinchar ekar genom salen och fällgallret höjs sakta upp och försvinner upp igenom taket.";
+    inspectExitP.className = "p-text";
+    textContainer.append(inspectExitP);
+
+    const exitButton = document.createElement("button");
+    exitButton.innerHTML = "Lämna salen";
+    exitButton.className = "button";
+    buttonContainer.append(exitButton);
+    backButton.onclick = loadExitScene;
+
+    const backButton = document.createElement("button");
+    backButton.innerHTML = "Tillbaka till rummet";
+    backButton.className = "button";
+    buttonContainer.append(backButton);
+    backButton.onclick = loadStatueScene;
+  } else {
+    const inspectExitP = document.createElement("p");
+    inspectExitP.innerHTML = "Fällgallret är nedfällt och går inte att rubba";
+    inspectExitP.className = "p-text";
+    textContainer.append(inspectExitP);
+
+    const backButton = document.createElement("button");
+    backButton.innerHTML = "Tillbaka till rummet";
+    backButton.className = "button";
+    buttonContainer.append(backButton);
+    backButton.onclick = loadStatueScene;
+  }
+}
+
+/**Renders the exit scene, describing how the user manages to escape the catacomb */
+function loadExitScene() {
+  welcomeHeading.innerHTML = "";
+  textContainer.innerHTML = "";
+  buttonContainer.innerHTML = "";
+
+  localStorage.setItem("currentScene", "exit");
+
+  const exitSceneP = document.createElement("p");
+  exitSceneP.innerHTML =
+    "Du går upp för trappan och sätter axeln mot dörren och trycker till. Dörren går upp och du bländas av dagsljus. Efter ett par ögonblick vänjer sig dina ögon och du befinner dig ute i den friska luften. Du har kommit ut ur katakomben och är fri.";
+  exitSceneP.className = "p-text";
+  textContainer.append(exitSceneP);
+}
